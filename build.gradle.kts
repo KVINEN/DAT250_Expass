@@ -31,6 +31,10 @@ tasks.withType<Test> {
 
 tasks.test {
     finalizedBy(tasks.jacocoTestReport)
+    extensions.configure(JacocoTaskExtension::class) {
+        //destinationFile = layout.buildDirectory.file("jacoco/jacocoTest.exec").get().asFile
+        classDumpDir = layout.buildDirectory.dir("jacoco/classpathdumps").get().asFile
+    }
 }
 
 tasks.jacocoTestReport {
@@ -47,5 +51,27 @@ tasks.jacocoTestReport {
         xml.required = false
         csv.required = false
         html.outputLocation = layout.buildDirectory.dir("jacocoHtml")
+    }
+}
+
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = "0.5".toBigDecimal()
+            }
+        }
+
+        rule {
+            isEnabled = false
+            element = "CLASS"
+            includes = listOf("org.gradle.*")
+
+            limit {
+                counter = "LINE"
+                value = "TOTALCOUNT"
+                maximum = "0.3".toBigDecimal()
+            }
+        }
     }
 }
