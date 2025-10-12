@@ -2,6 +2,7 @@ plugins {
 	java
 	id("org.springframework.boot") version "3.5.6"
 	id("io.spring.dependency-management") version "1.1.7"
+    id("org.sonarqube") version "6.3.1.5724"
     application
     jacoco
 }
@@ -19,6 +20,18 @@ java {
 
 application {
     mainClass = "com.example.Dat250ExpassApplication"
+}
+
+sonar {
+    properties {
+        property("sonar.projectKey", "KVINEN_DAT250Expass")
+        property("sonar.organization", "kvinen")
+        property("sonar.host.url", "https://sonarcloud.io")
+        val sonarToken = System.getenv("SONAR_TOKEN")
+        if(sonarToken != null) {
+            property("sonar.token", sonarToken)
+        }
+    }
 }
 
 repositories {
