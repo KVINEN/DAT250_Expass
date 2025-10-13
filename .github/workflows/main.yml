@@ -48,4 +48,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/your-repo-name:latest, ${{ secrets.DOCKERHUB_USERNAME }}/your-repo-name:${{ github.sha }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/DAT250_Expass:latest, ${{ secrets.DOCKERHUB_USERNAME }}/DAT250_Expass:${{ github.sha }}
