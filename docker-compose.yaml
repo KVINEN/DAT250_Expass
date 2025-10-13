@@ -1,0 +1,29 @@
+# This file defines how to run your application and its services locally.
+services:
+  # This is your Spring Boot application service.
+  server:
+    # This tells Compose to build an image from the Dockerfile in the current directory.
+    build: .
+    ports:
+      - "8080:8080"
+    # This ensures the database is running before your application starts.
+    depends_on:
+      - db
+
+  # This is the PostgreSQL database service.
+  db:
+    # This pulls the official PostgreSQL image from Docker Hub.
+    image: postgres:16
+    environment:
+      - POSTGRES_DB=mydatabase
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mysecretpassword
+    volumes:
+      # This saves the database data on your machine so it persists between restarts.
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+# This defines the named volume used by the database service.
+volumes:
+  postgres-data:
