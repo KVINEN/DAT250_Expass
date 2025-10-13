@@ -48,4 +48,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ vars.DOCKER_USERNAME }}/DAT250_Expass:latest, ${{ secrets.DOCKERHUB_USERNAME }}/DAT250_Expass:${{ github.sha }}
+          tags: ${{ vars.DOCKER_USERNAME }}/dat250_expass:latest, ${{ vars.DOCKER_USERNAME }}/dat250_expass:${{ github.sha }}
