@@ -1,4 +1,4 @@
-package Models;
+package com.example.DAT250_Expass.Models;
 
 import java.time.Instant;
 

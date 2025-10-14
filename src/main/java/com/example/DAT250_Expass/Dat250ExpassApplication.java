@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class Dat250ExpassApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(Dat250ExpassApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(Dat250ExpassApplication.class, args);
+    }
 
     @GetMapping("/hello")
     public String hello(@RequestParam(value = "name", defaultValue = "World")String name) {
