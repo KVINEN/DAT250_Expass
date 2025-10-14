@@ -1,4 +1,4 @@
-package com.example.DAT250_Expass;
+package Models;
 
 public class User {
 
