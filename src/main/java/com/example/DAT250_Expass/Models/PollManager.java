@@ -2,7 +2,9 @@ package com.example.DAT250_Expass.Models;
 
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 @Component
 public class PollManager {
@@ -29,6 +31,10 @@ public class PollManager {
 
     public Poll getPoll(int id) {
         return polls.get(id);
+    }
+
+    public List<User> getAllUsers() {
+        return new ArrayList<>(users.values());
     }
 
 }
