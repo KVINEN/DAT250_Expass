@@ -1,6 +1,10 @@
 package com.example.DAT250_Expass.Models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class VoteOption {
+
+    private Poll poll;
 
     private Integer id;
     private String caption;
@@ -13,6 +17,14 @@ public class VoteOption {
         this.id = id;
         this.caption = caption;
         this.presentationOrder = presentationOrder;
+    }
+
+    public Poll getPoll() {
+        return poll;
+    }
+
+    public void setPoll(Poll poll) {
+        this.poll = poll;
     }
 
     public Integer getId() {
