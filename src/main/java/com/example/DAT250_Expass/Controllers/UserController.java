@@ -16,7 +16,7 @@ public class UserController {
     private PollManager pollManager;
 
     @PostMapping("/api/users")
-    public ResponseEntity<?> addUser(@RequestBody User user){
+    public ResponseEntity<User> addUser(@RequestBody User user){
         User createUser = pollManager.addUser(user);
         return new ResponseEntity<>(createUser, HttpStatus.CREATED);
     }

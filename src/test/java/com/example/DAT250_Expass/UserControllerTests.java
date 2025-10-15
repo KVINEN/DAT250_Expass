@@ -7,12 +7,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,32 +21,39 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class UserControllerTests {
 
     @Autowired
-    private TestRestTemplate testRestTemplate;
+    private TestRestTemplate restTemplate;
 
     @LocalServerPort
     private int randomServerPort;
 
     @Test
-    public void testCreateAndListUsers() throws URISyntaxException {
-        final String url = "http://localhost:" + randomServerPort + "/api/users";
-        URI uri = new URI(url);
+    public void testCreateTwoUsersAndVerifyBothInList() throws URISyntaxException {
 
-        User user = new User(1, "Bob", "bob@gmail.com", "SuperSecret123");
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("X-COM-PERSIST", "true");
+        final String baseUrl = "http://localhost:" + randomServerPort + "/api/users";
+        URI uri = new URI(baseUrl);
 
-        HttpEntity<User> request = new HttpEntity<>(user, headers);
+        User user1 = new User(1, "Bob", "bob@gmail.com", "pass123");
+        HttpEntity<User> request1 = new HttpEntity<>(user1);
+        ResponseEntity<User> response1 = restTemplate.postForEntity(uri, request1, User.class);
+        assertThat(response1.getStatusCode().value()).isEqualTo(201);
 
-        ResponseEntity<User> result = this.testRestTemplate.postForEntity(uri, request, User.class);
+        ResponseEntity<User[]> listResponse1 = restTemplate.getForEntity(uri, User[].class);
+        assertThat(listResponse1.getBody()).isNotNull();
+        assertThat(listResponse1.getBody()[0].getUsername()).isEqualTo("Bob");
 
-        assertThat(result.getStatusCode().value()).isEqualTo(201);
+        User user2 = new User(2, "Tom", "tom@gmail.com", "pass456");
+        HttpEntity<User> request2 = new HttpEntity<>(user2);
+        ResponseEntity<User> response2 = restTemplate.postForEntity(uri, request2, User.class);
+        assertThat(response2.getStatusCode().value()).isEqualTo(201);
 
-        ResponseEntity<User[]> listResponse = this.testRestTemplate.getForEntity(uri, User[].class);;
+        ResponseEntity<User[]> listResponse = restTemplate.getForEntity(uri, User[].class);
 
-        assertThat(listResponse.getStatusCode().value()).isEqualTo(200);
-        assertThat(listResponse.getBody()).isNotNull();
-        assertThat(listResponse.getBody().length).isGreaterThan(0);
-        assertThat(listResponse.getBody()[0].getUsername()).isEqualTo("Bob");
+        ResponseEntity<User[]> listResponse2 = restTemplate.getForEntity(uri, User[].class);
+        assertThat(listResponse2.getBody()).hasSize(2);
+
+        List<String> usernames = Arrays.stream(listResponse2.getBody())
+                .map(User::getUsername)
+                .collect(Collectors.toList());
+        assertThat(usernames).containsExactlyInAnyOrder("Bob", "Tom");
     }
-
 }

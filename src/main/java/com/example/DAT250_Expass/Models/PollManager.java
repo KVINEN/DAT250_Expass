@@ -37,4 +37,8 @@ public class PollManager {
         return new ArrayList<>(users.values());
     }
 
+    public List<Poll> getAllPolls() {
+        return new ArrayList<>(polls.values());
+    }
+
 }
