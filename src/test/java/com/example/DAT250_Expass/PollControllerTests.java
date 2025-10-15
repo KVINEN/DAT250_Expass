@@ -2,6 +2,7 @@ package com.example.DAT250_Expass;
 
 import com.example.DAT250_Expass.Models.Poll;
 import com.example.DAT250_Expass.Models.User;
+import com.example.DAT250_Expass.Models.Vote;
 import com.example.DAT250_Expass.Models.VoteOption;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +61,34 @@ public class PollControllerTests {
         assertThat(response2.getBody()).isNotNull();
         assertThat(response2.getBody()).hasSize(1);
         assertThat(response2.getBody()[0].getQuestion()).isEqualTo("Does pineapple belong on pizza?");
+    }
+
+    @Test
+    public void testDeletePollAndVerifyVotesAreGone() throws URISyntaxException {
+        final String usersUrl = "http://localhost:" + randomServerPort + "/api/users";
+        User pollCreator = new User(1, "Creator", "creator@gmail.com", "pass123");
+        restTemplate.postForEntity(usersUrl, pollCreator, User.class);
+
+        final String pollsUrl = "http://localhost:" + randomServerPort + "/api/polls";
+        VoteOption option = new VoteOption(1, "OK", 1);
+        Poll pollToCreate = new Poll(1, "Delete Me Poll", Instant.now(), Instant.now().plusSeconds(100), true, pollCreator, List.of(option));
+
+        ResponseEntity<Poll> createdPollResponse = restTemplate.postForEntity(pollsUrl, pollToCreate, Poll.class);
+        Poll createdPoll = createdPollResponse.getBody();
+        assertThat(createdPoll).isNotNull();
+
+        final String votesUrl = pollsUrl + "/" + createdPoll.getId() + "/votes";
+        Vote vote = new Vote(1, pollCreator, Instant.now(), createdPoll.getVoteOption().get(0));
+        restTemplate.postForEntity(votesUrl, vote, Vote.class);
+
+        final String deletePollUrl = pollsUrl + "/" + createdPoll.getId();
+        restTemplate.delete(deletePollUrl);
+
+        ResponseEntity<Vote[]> listResponse = restTemplate.getForEntity(votesUrl, Vote[].class);
+
+        assertThat(listResponse.getStatusCode().value()).isEqualTo(200);
+        assertThat(listResponse.getBody()).isNotNull();
+        assertThat(listResponse.getBody()).isEmpty();
     }
     
 }

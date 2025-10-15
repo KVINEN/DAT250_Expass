@@ -5,10 +5,7 @@ import com.example.DAT250_Expass.Models.PollManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,5 +25,11 @@ public class PollController {
     public ResponseEntity<List<Poll>> getAllPolls() {
         List<Poll> polls = pollManager.getAllPolls();
         return new ResponseEntity<>(polls, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/api/polls/{pollId}")
+    public ResponseEntity<Void> deletePoll(@PathVariable Integer pollId) {
+        pollManager.deletePoll(pollId);
+        return ResponseEntity.noContent().build();
     }
 }

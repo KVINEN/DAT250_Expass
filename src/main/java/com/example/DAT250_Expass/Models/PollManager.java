@@ -57,4 +57,13 @@ public class PollManager {
     public HashMap<Integer, Vote> getVotes() {
         return votes;
     }
+
+    public void deletePoll(Integer pollId) {
+        List<Vote> votesToRemove = getVotesForPoll(pollId);
+        for (Vote vote : votesToRemove) {
+            votes.remove(vote.getVoteId());
+        }
+
+        polls.remove(pollId);
+    }
 }
