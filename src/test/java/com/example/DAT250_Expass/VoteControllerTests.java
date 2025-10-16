@@ -47,7 +47,7 @@ public class VoteControllerTests {
         optionYes = new VoteOption(1, "Yes", 1);
         optionNo = new VoteOption(2, "No", 2);
         List<VoteOption> options = List.of(optionYes, optionNo);
-        poll = new Poll(1, "Does pineapple belong on pizza?", Instant.now(), Instant.now().plusSeconds(3600), true, user1, options);
+        poll = new Poll(1, "Does pineapple belong on pizza?", Instant.now(), Instant.now().plusSeconds(3600), false, user1, options);
 
         ResponseEntity<Poll> pollResponse = restTemplate.postForEntity(pollUrl, poll, Poll.class);
         poll = pollResponse.getBody();

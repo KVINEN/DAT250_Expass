@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class VoteOption {
 
+    @JsonIgnore
     private Poll poll;
 
     private Integer id;

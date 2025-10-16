@@ -48,7 +48,7 @@ public class PollControllerTests {
                 new VoteOption(1, "Yes", 1),
                 new VoteOption(2, "No", 2)
         );
-        Poll newPoll = new Poll(1, "Does pineapple belong on pizza?", Instant.now(), Instant.now().plusSeconds(3600), true, pollCreator, options);
+        Poll newPoll = new Poll(1, "Does pineapple belong on pizza?", Instant.now(), Instant.now().plusSeconds(3600), false, pollCreator, options);
         HttpEntity<Poll> request = new HttpEntity<>(newPoll);
         ResponseEntity<Poll> response = this.restTemplate.postForEntity(uri, request, Poll.class);
 

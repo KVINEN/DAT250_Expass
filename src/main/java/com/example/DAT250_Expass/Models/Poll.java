@@ -13,7 +13,7 @@ public class Poll {
 
     private Instant validUntil;
 
-    private Boolean isPublic;
+    private Boolean isPrivate;
 
     private User user;
 
@@ -27,7 +27,7 @@ public class Poll {
         this.question = question;
         this.publishedAt = publishedAt;
         this.validUntil = validUntil;
-        this.isPublic = isPublic;
+        this.isPrivate = isPrivate;
         this.user = user;
         this.voteOption = voteOption;
     }
@@ -65,11 +65,11 @@ public class Poll {
     }
 
     public Boolean getPublic() {
-        return isPublic;
+        return isPrivate;
     }
 
-    public void setPublic(Boolean aPublic) {
-        isPublic = aPublic;
+    public void setPublic(Boolean isPrivate) {
+        this.isPrivate = isPrivate;
     }
 
     public User getUser() {
