@@ -22,7 +22,7 @@ public class Poll {
     public Poll() {
     }
 
-    public Poll(Integer id, String question, Instant publishedAt, Instant validUntil, Boolean isPublic, User user, List<VoteOption> voteOption) {
+    public Poll(Integer id, String question, Instant publishedAt, Instant validUntil, Boolean isPrivate, User user, List<VoteOption> voteOption) {
         this.id = id;
         this.question = question;
         this.publishedAt = publishedAt;
