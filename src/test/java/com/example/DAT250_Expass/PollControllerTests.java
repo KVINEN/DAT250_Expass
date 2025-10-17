@@ -4,7 +4,7 @@ import com.example.DAT250_Expass.Models.Poll;
 import com.example.DAT250_Expass.Models.User;
 import com.example.DAT250_Expass.Models.Vote;
 import com.example.DAT250_Expass.Models.VoteOption;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -14,9 +14,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -30,65 +28,86 @@ public class PollControllerTests {
     @LocalServerPort
     private int randomServerPort;
 
-    private User pollCreator;
-
-    @BeforeEach
-    public void setup() {
-        final String url = "http://localhost:" + randomServerPort + "/api/users";
-        pollCreator = new User(1, "Bob", "bob@gmail.com", "pass123");
-        restTemplate.postForEntity(url, pollCreator, User.class);
-    }
-
     @Test
-    public void createPoll() throws URISyntaxException {
-        final String url = "http://localhost:" + randomServerPort + "/api/polls";
-        URI uri = new URI(url);
+    public void testCreateAndListPoll() throws URISyntaxException {
+        String usersUrl = "http://localhost:" + randomServerPort + "/api/users";
+        User creator = new User();
+        creator.setUsername("Bob");
+        creator.setEmail("bob@gmail.com");
+        creator.setPassword("pass123");
+        ResponseEntity<User> userResponse = restTemplate.postForEntity(usersUrl, creator, User.class);
+        User createdCreator = userResponse.getBody();
 
-        List<VoteOption> options = List.of(
-                new VoteOption(1, "Yes", 1),
-                new VoteOption(2, "No", 2)
-        );
-        Poll newPoll = new Poll(1, "Does pineapple belong on pizza?", Instant.now(), Instant.now().plusSeconds(3600), false, pollCreator, options);
-        HttpEntity<Poll> request = new HttpEntity<>(newPoll);
-        ResponseEntity<Poll> response = this.restTemplate.postForEntity(uri, request, Poll.class);
+        String pollsUrl = "http://localhost:" + randomServerPort + "/api/polls";
+        URI uri = new URI(pollsUrl);
 
-        assertThat(response.getStatusCode().value()).isEqualTo(201);
-        assertThat(response.getBody().getQuestion()).isEqualTo("Does pineapple belong on pizza?");
+        VoteOption option1 = new VoteOption();
+        option1.setCaption("Yes");
+        option1.setPresentationOrder(1);
 
-        ResponseEntity<Poll[]> response2 = restTemplate.getForEntity(uri, Poll[].class);
+        VoteOption option2 = new VoteOption();
+        option2.setCaption("No");
+        option2.setPresentationOrder(2);
 
-        assertThat(response2.getStatusCode().value()).isEqualTo(200);
-        assertThat(response2.getBody()).isNotNull();
-        assertThat(response2.getBody()).hasSize(1);
-        assertThat(response2.getBody()[0].getQuestion()).isEqualTo("Does pineapple belong on pizza?");
+        Poll newPoll = new Poll();
+        newPoll.setQuestion("Does pineapple belong on pizza?");
+        newPoll.setPublishedAt(Instant.now());
+        newPoll.setValidUntil(Instant.now().plusSeconds(3600));
+        newPoll.setPublic(false);
+        newPoll.setUser(createdCreator);
+        newPoll.setVoteOption(List.of(option1, option2));
+
+        ResponseEntity<Poll> createPollResponse = restTemplate.postForEntity(uri, new HttpEntity<>(newPoll), Poll.class);
+        assertThat(createPollResponse.getStatusCode().value()).isEqualTo(201);
+        assertThat(createPollResponse.getBody().getQuestion()).isEqualTo("Does pineapple belong on pizza?");
+
+        ResponseEntity<Poll[]> listPollsResponse = restTemplate.getForEntity(uri, Poll[].class);
+        assertThat(listPollsResponse.getStatusCode().value()).isEqualTo(200);
+        assertThat(listPollsResponse.getBody()).isNotNull();
+        assertThat(listPollsResponse.getBody().length).isGreaterThan(0);
+        assertThat(listPollsResponse.getBody()[0].getQuestion()).isEqualTo("Does pineapple belong on pizza?");
     }
 
     @Test
     public void testDeletePollAndVerifyVotesAreGone() throws URISyntaxException {
-        final String usersUrl = "http://localhost:" + randomServerPort + "/api/users";
-        User pollCreator = new User(1, "Creator", "creator@gmail.com", "pass123");
-        restTemplate.postForEntity(usersUrl, pollCreator, User.class);
+        String usersUrl = "http://localhost:" + randomServerPort + "/api/users";
+        User creator = new User();
+        creator.setUsername("Creator");
+        creator.setEmail("creator@gmail.com");
+        creator.setPassword("pass123");
+        ResponseEntity<User> userResponse = restTemplate.postForEntity(usersUrl, creator, User.class);
+        User createdCreator = userResponse.getBody();
 
-        final String pollsUrl = "http://localhost:" + randomServerPort + "/api/polls";
-        VoteOption option = new VoteOption(1, "OK", 1);
-        Poll pollToCreate = new Poll(1, "Delete Me Poll", Instant.now(), Instant.now().plusSeconds(100), true, pollCreator, List.of(option));
+        String pollsUrl = "http://localhost:" + randomServerPort + "/api/polls";
+        VoteOption option = new VoteOption();
+        option.setCaption("OK");
+        option.setPresentationOrder(1);
+
+        Poll pollToCreate = new Poll();
+        pollToCreate.setQuestion("Delete Me Poll");
+        pollToCreate.setPublishedAt(Instant.now());
+        pollToCreate.setValidUntil(Instant.now().plusSeconds(100));
+        pollToCreate.setPublic(true);
+        pollToCreate.setUser(createdCreator);
+        pollToCreate.setVoteOption(List.of(option));
 
         ResponseEntity<Poll> createdPollResponse = restTemplate.postForEntity(pollsUrl, pollToCreate, Poll.class);
         Poll createdPoll = createdPollResponse.getBody();
         assertThat(createdPoll).isNotNull();
 
-        final String votesUrl = pollsUrl + "/" + createdPoll.getId() + "/votes";
-        Vote vote = new Vote(1, pollCreator, Instant.now(), createdPoll.getVoteOption().get(0));
+        String votesUrl = pollsUrl + "/" + createdPoll.getId() + "/votes";
+        Vote vote = new Vote();
+        vote.setUser(createdCreator);
+        vote.setPublishedAt(Instant.now());
+        vote.setVotingOption(createdPoll.getVoteOption().get(0));
         restTemplate.postForEntity(votesUrl, vote, Vote.class);
 
-        final String deletePollUrl = pollsUrl + "/" + createdPoll.getId();
+        String deletePollUrl = pollsUrl + "/" + createdPoll.getId();
         restTemplate.delete(deletePollUrl);
 
         ResponseEntity<Vote[]> listResponse = restTemplate.getForEntity(votesUrl, Vote[].class);
-
         assertThat(listResponse.getStatusCode().value()).isEqualTo(200);
         assertThat(listResponse.getBody()).isNotNull();
         assertThat(listResponse.getBody()).isEmpty();
     }
-    
 }
