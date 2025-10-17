@@ -18,7 +18,6 @@ function removeOption() {
 
 async function createPoll() {
     const pollData = {
-        id: Math.floor(Math.random()*10000),
         question: question.value,
         publishedAt: new Date().toISOString(),
         validUntil: new Date(deadline.value).toISOString(),
@@ -29,8 +28,7 @@ async function createPoll() {
             email: 'bob@gmail.com',
             password: 'pass',
         },
-        voteOption: options.value.map((opt, index) => ({
-            id: index + 1,
+        voteOption: options.value.map((opt) => ({
             caption: opt.text,
             presentationOrder: index + 1
         })),

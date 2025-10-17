@@ -4,16 +4,22 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Component
 public class PollManager {
+
+    private final AtomicInteger userIdCounter = new AtomicInteger();
+    private final AtomicInteger pollIdCounter = new AtomicInteger();
+    private final AtomicInteger voteIdCounter = new AtomicInteger();
 
     private final HashMap<Integer, User> users = new HashMap<>();
     private final HashMap<Integer, Poll> polls = new HashMap<>();
     private final HashMap<Integer, Vote> votes = new HashMap<>();
 
     public User addUser(User user) {
+        user.setId(userIdCounter.incrementAndGet());
         users.put(user.getId(), user);
         return user;
     }
@@ -23,6 +29,11 @@ public class PollManager {
     }
 
     public Poll addPoll(Poll poll) {
+        poll.setId(pollIdCounter.incrementAndGet());
+        int optionCounter = 1;
+        for (VoteOption option : poll.getVoteOption()) {
+            option.setId(optionCounter++);
+        }
         polls.put(poll.getId(), poll);
         return poll;
     }
@@ -36,8 +47,14 @@ public class PollManager {
     }
 
     public Vote addVote(Vote vote) {
-        votes.put(vote.getVoteId(), vote);
-        return vote;
+        Poll poll = vote.getVotingOption().getPoll();
+        if (vote.getPublishedAt().isAfter(poll.getPublishedAt()) && vote.getPublishedAt().isBefore(poll.getValidUntil())) {
+            vote.setVoteId(voteIdCounter.incrementAndGet());
+            votes.put(vote.getVoteId(), vote);
+            return vote;
+        } else {
+            throw new IllegalArgumentException("Vote is outside the valid time window");
+        }
     }
 
     public Vote updateVote(Integer voteId, Vote updatedVote) {

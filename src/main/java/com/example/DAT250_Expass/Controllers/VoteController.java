@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 
@@ -18,13 +19,17 @@ public class VoteController {
 
     @PostMapping("/api/polls/{pollId}/votes")
     public ResponseEntity<Vote> castVote(@PathVariable Integer pollId, @RequestBody Vote vote) {
-        Poll parentPoll = pollManager.getPollById(pollId);
-        if (parentPoll == null) {
-            return ResponseEntity.notFound().build();
+        try {
+            Poll parentPoll = pollManager.getPollById(pollId);
+            if (parentPoll == null) {
+                return ResponseEntity.notFound().build();
+            }
+            vote.getVotingOption().setPoll(parentPoll);
+            Vote newVote = pollManager.addVote(vote);
+            return new ResponseEntity<>(newVote, HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-        vote.getVotingOption().setPoll(parentPoll);
-        Vote newVote = pollManager.addVote(vote);
-        return new ResponseEntity<>(newVote, HttpStatus.CREATED);
     }
 
     @PutMapping("/api/votes/{voteId}")
