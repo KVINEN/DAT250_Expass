@@ -55,7 +55,7 @@ public class PollControllerTests {
                 new VoteOption(1, "Yes", 1),
                 new VoteOption(2, "No", 2)
         );
-        Poll newPoll = new Poll(1, "Does pineapple belong on pizza?", Instant.now(), Instant.now().plusSeconds(3600), false, pollCreator, options);
+        Poll newPoll = new Poll(1, "Does pineapple belong on pizza?", Instant.now(), Instant.now().plusSeconds(3600), false, pollCreator, options, false);
         HttpEntity<Poll> request = new HttpEntity<>(newPoll);
         ResponseEntity<Poll> response = this.restTemplate.postForEntity(uri, request, Poll.class);
 
@@ -78,7 +78,7 @@ public class PollControllerTests {
 
         final String pollsUrl = "http://localhost:" + randomServerPort + "/api/polls";
         VoteOption option = new VoteOption(1, "OK", 1);
-        Poll pollToCreate = new Poll(1, "Delete Me Poll", Instant.now(), Instant.now().plusSeconds(100), true, pollCreator, List.of(option));
+        Poll pollToCreate = new Poll(1, "Delete Me Poll", Instant.now(), Instant.now().plusSeconds(100), true, pollCreator, List.of(option), false);
 
         ResponseEntity<Poll> createdPollResponse = restTemplate.postForEntity(pollsUrl, pollToCreate, Poll.class);
         Poll createdPoll = createdPollResponse.getBody();

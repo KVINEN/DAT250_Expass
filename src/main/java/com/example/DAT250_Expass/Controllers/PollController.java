@@ -23,7 +23,7 @@ public class PollController {
 
     @GetMapping("/api/polls")
     public ResponseEntity<List<Poll>> getAllPolls() {
-        List<Poll> polls = pollManager.getAllPolls();
+        List<Poll> polls = pollManager.getAllPublicPolls();
         return new ResponseEntity<>(polls, HttpStatus.OK);
     }
 

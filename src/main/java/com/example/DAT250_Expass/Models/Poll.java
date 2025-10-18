@@ -19,15 +19,18 @@ public class Poll {
 
     private List<VoteOption> voteOption;
 
+    private Boolean limitToOneVote;
+
     public Poll() {
     }
 
-    public Poll(Integer id, String question, Instant publishedAt, Instant validUntil, Boolean isPrivate, User user, List<VoteOption> voteOption) {
+    public Poll(Integer id, String question, Instant publishedAt, Instant validUntil, Boolean isPrivate, User user, List<VoteOption> voteOption, Boolean limitToOneVote) {
         this.id = id;
         this.question = question;
         this.publishedAt = publishedAt;
         this.validUntil = validUntil;
         this.isPrivate = isPrivate;
+        this.limitToOneVote = limitToOneVote;
         this.user = user;
         this.voteOption = voteOption;
     }
@@ -64,11 +67,11 @@ public class Poll {
         this.validUntil = validUntil;
     }
 
-    public Boolean getPublic() {
+    public Boolean getIsPrivate() {
         return isPrivate;
     }
 
-    public void setPublic(Boolean isPrivate) {
+    public void setIsPrivate(Boolean isPrivate) {
         this.isPrivate = isPrivate;
     }
 
@@ -86,5 +89,13 @@ public class Poll {
 
     public void setVoteOption(List<VoteOption> voteOption) {
         this.voteOption = voteOption;
+    }
+
+    public Boolean getLimitToOneVote() {
+        return limitToOneVote;
+    }
+
+    public void setLimitToOneVote(Boolean limitToOneVote) {
+        this.limitToOneVote = limitToOneVote;
     }
 }

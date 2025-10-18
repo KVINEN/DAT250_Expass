@@ -1,6 +1,8 @@
 package com.example.DAT250_Expass.Models;
 
 import org.springframework.stereotype.Component;
+
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,19 +44,32 @@ public class PollManager {
         return polls.get(pollId);
     }
 
-    public List<Poll> getAllPolls() {
-        return new ArrayList<>(polls.values());
+    public List<Poll> getAllPublicPolls() {
+        return polls.values().stream()
+                .filter(poll -> !poll.getIsPrivate())
+                .collect(Collectors.toList());
     }
 
     public Vote addVote(Vote vote) {
         Poll poll = vote.getVotingOption().getPoll();
-        if (vote.getPublishedAt().isAfter(poll.getPublishedAt()) && vote.getPublishedAt().isBefore(poll.getValidUntil())) {
-            vote.setVoteId(voteIdCounter.incrementAndGet());
-            votes.put(vote.getVoteId(), vote);
-            return vote;
-        } else {
+        User user = vote.getUser();
+        Instant now = Instant.now();
+
+        if(!(now.isAfter(poll.getPublishedAt()) && now.isBefore(poll.getValidUntil()))) {
             throw new IllegalArgumentException("Vote is outside the valid time window");
         }
+
+        if (poll.getIsPrivate() && poll.getLimitToOneVote()) {
+            for (Vote existingVote : votes.values()) {
+                if (existingVote.getUser().equals(user) && existingVote.getVotingOption().getPoll().getId().equals(poll.getId())) {
+                    throw new IllegalArgumentException("User has already voted on this private poll");
+                }
+            }
+        }
+
+        vote.setVoteId(voteIdCounter.incrementAndGet());
+        votes.put(vote.getVoteId(), vote);
+        return vote;
     }
 
     public Vote updateVote(Integer voteId, Vote updatedVote) {
