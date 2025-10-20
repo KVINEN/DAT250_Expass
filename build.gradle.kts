@@ -19,7 +19,7 @@ java {
 }
 
 application {
-    mainClass = "com.example.Dat250ExpassApplication"
+    mainClass = "com.example.DAT250_Expass.Dat250ExpassApplication"
 }
 
 sonar {

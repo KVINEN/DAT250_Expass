@@ -12,7 +12,7 @@ function addOption() {
 }
 
 function removeOption() {
-    options.value.slice(indexed, 1)
+    options.value.slice(index, 1)
 }
 
 
@@ -28,14 +28,14 @@ async function createPoll() {
             email: 'bob@gmail.com',
             password: 'pass',
         },
-        voteOption: options.value.map((opt) => ({
+        voteOption: options.value.map((opt, index) => ({
             caption: opt.text,
             presentationOrder: index + 1
         })),
     }
 
     try {
-        const response = await fetch('http://localhost:8080/api/polls', {
+        const response = await fetch('/api/polls', {
             method: 'POST',
             headers: {
                 'content-Type': 'application/json'

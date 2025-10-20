@@ -9,7 +9,7 @@ const message = ref('')
 async function fetchPolls() {
     try {
         isLoading.value = true
-        const response = await fetch('http://localhost:8080/api/polls')
+        const response = await fetch('/api/polls')
 
         if (response.ok) {
             polls.value = await response.json()
@@ -34,7 +34,7 @@ async function castVote(poll, option) {
     }
 
     try {
-        const response = await fetch(`http://localhost:8080/api/polls/${poll.id}/votes`, {
+        const response = await fetch(`/api/polls/${poll.id}/votes`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -45,8 +45,9 @@ async function castVote(poll, option) {
         if (response.ok) {
             alert(`You voted for "${option.caption}"!`)
         } else {
-            message = await response.text()
-            throw new Error(errorText || 'Failed to cast vote.')
+            const errorText = await response.text()
+            message.value = errorText || 'Failed to cast vote.'
+            throw new Error(message.value)
         }
     } catch (error) {
         alert(`Error: ${error.message}`)
@@ -66,9 +67,9 @@ onMounted (() => {
 
     <p v-if="isLoading">Loading polls...</p>
 
-    <p v-else-if="error" class="error-message">
+    <p v-else-if="message" class="error-message">
       Could not load polls. Is the backend server running? <br />
-      Error: {{ error }}
+      Error: {{ message }}
     </p>
 
     <div v-else class="poll-list">
