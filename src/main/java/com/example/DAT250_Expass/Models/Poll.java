@@ -45,21 +45,19 @@ public class Poll {
         this.limitToOneVote = limitToOneVote;
         this.createdBy = user;
         if (voteOption != null) {
-            for (VoteOption option : voteOption) {
-                this.addVoteOption(option.getCaption());
-            }
+            options.forEach(opt -> this.addVoteOption(opt.getCaption()));
         }
     }
 
     public VoteOption addVoteOption(String caption) {
-        if (this.options == null) { // Use new name
-            this.options = new ArrayList<>(); // Use new name
+        if (this.options == null) {
+            this.options = new ArrayList<>();
         }
         VoteOption newOption = new VoteOption();
         newOption.setCaption(caption);
-        newOption.setPresentationOrder(this.options.size()); // Use new name
+        newOption.setPresentationOrder(this.options.size());
         newOption.setPoll(this);
-        this.options.add(newOption); // Use new name
+        this.options.add(newOption);
         return newOption;
     }
 

@@ -60,7 +60,7 @@ public class Vote {
         return votesOn;
     }
 
-    public void setVotesOn(VoteOption votingOption) {
+    public void setVotesOn(VoteOption votesOn) {
         this.votesOn = votesOn;
     }
 

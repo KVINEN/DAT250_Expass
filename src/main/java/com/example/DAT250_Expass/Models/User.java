@@ -60,7 +60,7 @@ public class User {
     public Vote voteFor(VoteOption option) {
         Vote newVote = new Vote();
         newVote.setUser(this);
-        newVote.setVotingOption(option);
+        newVote.setVotesOn(option);
         newVote.setPublishedAt(Instant.now());
         this.votes.add(newVote);
         return newVote;
