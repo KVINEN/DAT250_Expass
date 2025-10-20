@@ -23,3 +23,7 @@ This was caused by the fact that I renamed and changed some of the names of get/
 
 ##### Solution:
  - I kept the old getters and setters but introduced the annotations @Transient and @Deprecated 
+
+### OnGoing problem:
+
+Never got the H2 server to work still trying to figure it out
