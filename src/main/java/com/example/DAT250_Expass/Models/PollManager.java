@@ -32,9 +32,13 @@ public class PollManager {
 
     public Poll addPoll(Poll poll) {
         poll.setId(pollIdCounter.incrementAndGet());
-        int optionCounter = 1;
-        for (VoteOption option : poll.getOptions()) {
-            option.setId(optionCounter++);
+        List<VoteOption> options = poll.getOptions();
+        if (options != null) {
+            int optionCounter = 1;
+            for (VoteOption option : options) {
+                option.setId(optionCounter++);
+                option.setPoll(poll);
+            }
         }
         polls.put(poll.getId(), poll);
         return poll;
@@ -51,7 +55,7 @@ public class PollManager {
     }
 
     public Vote addVote(Vote vote) {
-        Poll poll = vote.getVotingOption().getPoll();
+        Poll poll = vote.getVotesOn().getPoll();
         User user = vote.getUser();
         Instant now = Instant.now();
 
@@ -61,7 +65,7 @@ public class PollManager {
 
         if (poll.getIsPrivate() && poll.getLimitToOneVote()) {
             for (Vote existingVote : votes.values()) {
-                if (existingVote.getUser().equals(user) && existingVote.getVotingOption().getPoll().getId().equals(poll.getId())) {
+                if (existingVote.getUser().equals(user) && existingVote.getVotesOn().getPoll().getId().equals(poll.getId())) {
                     throw new IllegalArgumentException("User has already voted on this private poll");
                 }
             }
@@ -82,7 +86,7 @@ public class PollManager {
 
     public List<Vote> getVotesForPoll(Integer pollId) {
         return votes.values().stream()
-                .filter(vote -> vote.getVotingOption().getPoll().getId().equals(pollId))
+                .filter(vote -> vote.getVotesOn().getPoll().getId().equals(pollId))
                 .collect(Collectors.toList());
     }
 

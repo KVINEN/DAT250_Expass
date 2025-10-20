@@ -35,7 +35,7 @@ public class Poll {
         this.options = new ArrayList<>();
     }
 
-    public Poll(Integer id, String question, Instant publishedAt, Instant validUntil, Boolean isPrivate, User user, List<VoteOption> voteOption, Boolean limitToOneVote) {
+    public Poll(Integer id, String question, Instant publishedAt, Instant validUntil, Boolean isPrivate, User user, List<VoteOption> voteOptions, Boolean limitToOneVote) {
         this();
         this.id = id;
         this.question = question;
@@ -44,8 +44,10 @@ public class Poll {
         this.isPrivate = isPrivate;
         this.limitToOneVote = limitToOneVote;
         this.createdBy = user;
-        if (voteOption != null) {
-            options.forEach(opt -> this.addVoteOption(opt.getCaption()));
+        if (voteOptions != null) {
+            for (VoteOption option : voteOptions) {
+                this.addVoteOption(option.getCaption());
+            }
         }
     }
 
