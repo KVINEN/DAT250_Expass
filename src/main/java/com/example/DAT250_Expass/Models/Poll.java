@@ -1,10 +1,17 @@
 package com.example.DAT250_Expass.Models;
 
+import jakarta.persistence.*;
+
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
+@Entity
+@Table(name = "polls")
 public class Poll {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private String question;
@@ -15,24 +22,45 @@ public class Poll {
 
     private Boolean isPrivate;
 
-    private User user;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User createdBy;
 
-    private List<VoteOption> voteOption;
+    @OneToMany(mappedBy = "poll", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<VoteOption> options = new ArrayList<>();
 
     private Boolean limitToOneVote;
 
     public Poll() {
+        this.options = new ArrayList<>();
     }
 
     public Poll(Integer id, String question, Instant publishedAt, Instant validUntil, Boolean isPrivate, User user, List<VoteOption> voteOption, Boolean limitToOneVote) {
+        this();
         this.id = id;
         this.question = question;
         this.publishedAt = publishedAt;
         this.validUntil = validUntil;
         this.isPrivate = isPrivate;
         this.limitToOneVote = limitToOneVote;
-        this.user = user;
-        this.voteOption = voteOption;
+        this.createdBy = user;
+        if (voteOption != null) {
+            for (VoteOption option : voteOption) {
+                this.addVoteOption(option.getCaption());
+            }
+        }
+    }
+
+    public VoteOption addVoteOption(String caption) {
+        if (this.options == null) { // Use new name
+            this.options = new ArrayList<>(); // Use new name
+        }
+        VoteOption newOption = new VoteOption();
+        newOption.setCaption(caption);
+        newOption.setPresentationOrder(this.options.size()); // Use new name
+        newOption.setPoll(this);
+        this.options.add(newOption); // Use new name
+        return newOption;
     }
 
     public String getQuestion() {
@@ -75,20 +103,20 @@ public class Poll {
         this.isPrivate = isPrivate;
     }
 
-    public User getUser() {
-        return user;
+    public User getCreatedBy() {
+        return createdBy;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
     }
 
-    public List<VoteOption> getVoteOption() {
-        return voteOption;
+    public List<VoteOption> getOptions() {
+        return options;
     }
 
-    public void setVoteOption(List<VoteOption> voteOption) {
-        this.voteOption = voteOption;
+    public void setOptions(List<VoteOption> options) {
+        this.options = options;
     }
 
     public Boolean getLimitToOneVote() {

@@ -33,7 +33,7 @@ public class PollManager {
     public Poll addPoll(Poll poll) {
         poll.setId(pollIdCounter.incrementAndGet());
         int optionCounter = 1;
-        for (VoteOption option : poll.getVoteOption()) {
+        for (VoteOption option : poll.getOptions()) {
             option.setId(optionCounter++);
         }
         polls.put(poll.getId(), poll);

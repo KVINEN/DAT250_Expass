@@ -1,15 +1,23 @@
 package com.example.DAT250_Expass.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 
+@Entity
+@Table(name = "voting_options")
 public class VoteOption {
 
-    @JsonIgnore
-    private Poll poll;
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     private String caption;
     private Integer presentationOrder;
+
+    @ManyToOne
+    @JoinColumn(name = "poll_id")
+    @JsonIgnore
+    private Poll poll;
 
     public VoteOption() {
     }

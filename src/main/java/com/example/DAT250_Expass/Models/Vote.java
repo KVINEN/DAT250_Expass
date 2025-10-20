@@ -1,22 +1,35 @@
 package com.example.DAT250_Expass.Models;
 
+import jakarta.persistence.*;
+
 import java.time.Instant;
 
+@Entity
+@Table(name = "votes")
 public class Vote {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private  Integer voteId;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
+
     private Instant publishedAt;
-    private VoteOption votingOption;
+
+    @ManyToOne
+    @JoinColumn(name = "voting_option_id")
+    private VoteOption votesOn;
 
     public Vote() {
     }
 
-    public Vote(Integer voteId, User user, Instant publishedAt, VoteOption votingOption) {
+    public Vote(Integer voteId, User user, Instant publishedAt, VoteOption votesOn) {
         this.voteId = voteId;
         this.user = user;
         this.publishedAt = publishedAt;
-        this.votingOption = votingOption;
+        this.votesOn = votesOn;
     }
 
     public Integer getVoteId() {
@@ -43,11 +56,23 @@ public class Vote {
         this.publishedAt = publishedAt;
     }
 
-    public VoteOption getVotingOption() {
-        return votingOption;
+    public VoteOption getVotesOn() {
+        return votesOn;
     }
 
+    public void setVotesOn(VoteOption votingOption) {
+        this.votesOn = votesOn;
+    }
+
+    @Transient
+    @Deprecated
+    public VoteOption getVotingOption() {
+        return votesOn;
+    }
+
+    @Transient
+    @Deprecated
     public void setVotingOption(VoteOption votingOption) {
-        this.votingOption = votingOption;
+        this.votesOn = votingOption;
     }
 }

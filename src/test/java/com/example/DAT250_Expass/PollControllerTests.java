@@ -15,9 +15,7 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -85,7 +83,7 @@ public class PollControllerTests {
         assertThat(createdPoll).isNotNull();
 
         final String votesUrl = pollsUrl + "/" + createdPoll.getId() + "/votes";
-        Vote vote = new Vote(1, pollCreator, Instant.now(), createdPoll.getVoteOption().get(0));
+        Vote vote = new Vote(1, pollCreator, Instant.now(), createdPoll.getOptions().get(0));
         restTemplate.postForEntity(votesUrl, vote, Vote.class);
 
         final String deletePollUrl = pollsUrl + "/" + createdPoll.getId();
