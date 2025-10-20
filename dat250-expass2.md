@@ -1,4 +1,4 @@
-# DAT250
+# DAT250 Expass 2
 
 ## Problems with task 2
 
