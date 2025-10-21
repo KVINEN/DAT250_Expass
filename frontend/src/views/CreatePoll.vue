@@ -11,9 +11,11 @@ function addOption() {
     options.value.push({ text: ''})
 }
 
-function removeOption() {
-    options.value.slice(index, 1)
-}
+function removeOption(index) {
+     if (options.value.length > 2) {
+         options.value.splice(index, 1);
+     }
+    }
 
 
 async function createPoll() {

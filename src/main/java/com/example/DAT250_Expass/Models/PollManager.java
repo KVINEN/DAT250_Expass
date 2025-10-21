@@ -32,14 +32,21 @@ public class PollManager {
 
     public Poll addPoll(Poll poll) {
         poll.setId(pollIdCounter.incrementAndGet());
+
         List<VoteOption> options = poll.getOptions();
-        if (options != null) {
-            int optionCounter = 1;
-            for (VoteOption option : options) {
-                option.setId(optionCounter++);
-                option.setPoll(poll);
-            }
+
+        if (options == null) {
+            options = new ArrayList<>();
+            poll.setOptions(options);
         }
+
+        int optionCounter = 1;
+        for (VoteOption option : options) {
+            option.setPoll(poll);
+            option.setId(optionCounter++);
+            option.setPresentationOrder(optionCounter - 1);
+        }
+
         polls.put(poll.getId(), poll);
         return poll;
     }

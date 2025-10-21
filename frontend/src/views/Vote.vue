@@ -18,7 +18,7 @@ async function fetchPolls() {
         } 
     } catch (error) {
     message.value = error.message
-    console.message('Error fetching polls:', error)
+    console.error('Error fetching polls:', error)
     } finally {
         isLoading.value = false
     }
@@ -30,7 +30,7 @@ async function castVote(poll, option) {
     const voteData = {
         user: voter,
         publishedAt: new Date().toISOString(),
-        votingOption: option,
+        votesOn: option,
     }
 
     try {
