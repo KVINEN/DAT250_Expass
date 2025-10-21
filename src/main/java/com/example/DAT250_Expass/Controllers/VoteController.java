@@ -24,7 +24,7 @@ public class VoteController {
             if (parentPoll == null) {
                 return ResponseEntity.notFound().build();
             }
-            vote.getVotingOption().setPoll(parentPoll);
+            vote.getVotesOn().setPoll(parentPoll);
             Vote newVote = pollManager.addVote(vote);
             return new ResponseEntity<>(newVote, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
@@ -36,8 +36,8 @@ public class VoteController {
     public ResponseEntity<Vote> changeVote(@PathVariable Integer voteId, @RequestBody Vote vote) {
         Vote existingVote = pollManager.getVotes().get(voteId);
         if (existingVote != null) {
-            Poll parentPoll = existingVote.getVotingOption().getPoll();
-            vote.getVotingOption().setPoll(parentPoll);
+            Poll parentPoll = existingVote.getVotesOn().getPoll();
+            vote.getVotesOn().setPoll(parentPoll);
         }
 
         Vote updatedVote = pollManager.updateVote(voteId, vote);
