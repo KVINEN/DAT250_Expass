@@ -28,7 +28,7 @@ async function createPoll() {
             email: 'bob@gmail.com',
             password: 'pass',
         },
-        voteOption: options.value.map((opt, index) => ({
+        options: options.value.map((opt, index) => ({
             caption: opt.text,
             presentationOrder: index + 1
         })),

@@ -76,7 +76,7 @@ onMounted (() => {
       <div v-for="poll in polls" :key="poll.id" class="poll-card">
         <h3>{{ poll.question }}</h3>
         <ul class="options-list">
-          <li v-for="option in poll.option" :key="option.id" class="option-item">
+          <li v-for="option in poll.options" :key="option.id" class="option-item">
             <span>{{ option.caption }}</span>
             <button @click="castVote(poll, option)">Vote</button>
           </li>
