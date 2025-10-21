@@ -24,7 +24,7 @@ async function createPoll() {
         publishedAt: new Date().toISOString(),
         validUntil: new Date(deadline.value).toISOString(),
         isPrivate: isPrivate.value,
-        user: {
+        createdBy: {
             id: 1,
             username: 'bob',
             email: 'bob@gmail.com',

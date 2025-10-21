@@ -26,4 +26,5 @@ This was caused by the fact that I renamed and changed some of the names of get/
 
 ### OnGoing problem:
 
-Never got the H2 server to work still trying to figure it out
+ - Never got the H2 server to work still trying to figure it out
+ - Backend is not receiving options or user when trying to create a poll from frontend
