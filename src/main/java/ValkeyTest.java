@@ -73,7 +73,7 @@ public class ValkeyTest {
 
 
         } catch (Exception e) {
-            e.printStackTrace();
+            e.getCause();
         }
         jedisPool.close();
     }
