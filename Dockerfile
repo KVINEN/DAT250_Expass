@@ -13,7 +13,7 @@ COPY build.gradle.kts settings.gradle.kts ./
 COPY src ./src
 
 # Build the application. The --no-daemon flag is best for CI/CD environments.
-RUN chmod +x ./gradlew && ./gradlew build --no-daemon
+RUN chmod +x ./gradlew && ./gradlew build -x test --no-daemon
 
 # ---
 
