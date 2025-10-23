@@ -42,20 +42,13 @@ jobs:
           echo "Waiting for Valkey service on localhost..."
           count=0
           until nc -z localhost 6379 || [ $count -eq 30 ]; do
-            echo "Valkey not ready yet on localhost:6379, waiting... ($count/30)"
-            sleep 2
-            count=$((count+1))
           done
-          
           if ! nc -z localhost 6379; then
-            echo "::error::Valkey service failed to become available on localhost:6379 after 60 seconds."
-            exit 1
           fi
           echo "Valkey service is ready on localhost."
           
           echo "Starting build, analysis, and tests..."
-          # Run build, tests, and sonarqube here. Connect using localhost.
-          ./gradlew build sonarqube -Dvalkey.host=localhost --info
+          ./gradlew build sonarqube -Dvalkey.host=localhost --info 
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
