@@ -15,8 +15,11 @@ public class ValkeyTest {
         config.setMaxIdle(32);
         config.setMinIdle(16);
 
-        String valkeyHost = System.getenv("VALKEY_HOST");
-        if(valkeyHost == null) {
+        String valkeyHost = System.getProperty("valkey.host");
+        if (valkeyHost == null || valkeyHost.isEmpty()) {
+            valkeyHost = System.getenv("VALKEY_HOST");
+        }
+        if(valkeyHost == null || valkeyHost.isEmpty()) {
             valkeyHost = "localhost";
         }
 

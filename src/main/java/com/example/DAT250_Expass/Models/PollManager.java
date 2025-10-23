@@ -26,8 +26,11 @@ public class PollManager {
     private final int CASH_TTL_SECONDS = 300;
 
     public PollManager() {
-        String valkeyHost = System.getenv("VALKEY_HOST");
-        if (valkeyHost == null) {
+        String valkeyHost = System.getProperty("valkey.host");
+        if (valkeyHost == null || valkeyHost.isEmpty()) {
+            valkeyHost = System.getenv("VALKEY_HOST");
+        }
+        if (valkeyHost == null || valkeyHost.isEmpty()) {
             valkeyHost = "localhost";
         }
         this.jedis = new JedisPooled(valkeyHost, 6379);
