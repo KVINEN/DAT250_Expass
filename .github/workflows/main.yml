@@ -35,9 +35,25 @@ jobs:
           VALKEY_HOST: valkey
         run: |
           echo "Waiting for Valkey service..."
-          sleep 10 # Wait 10 seconds for the service to start
+          # --- START HEALTH CHECK ---
+          count=0
+          # Try connecting for up to 60 seconds (30 attempts * 2s sleep)
+          until nc -z valkey 6379 || [ $count -eq 30 ]; do
+            echo "Valkey not ready yet on port 6379, waiting... ($count/30)"
+            sleep 2
+            count=$((count+1))
+          done
+          
+          # Check if the loop exited because the service is ready or because it timed out
+          if ! nc -z valkey 6379; then
+            echo "::error::Valkey service failed to become available on valkey:6379 after 60 seconds."
+            exit 1
+          fi
+          echo "Valkey service is ready."
+          # --- END HEALTH CHECK ---
+          
           echo "Starting build and tests..."
-          # Pass the host as a system property as well
+          # Pass the host as a system property (still a good practice)
           ./gradlew build sonarqube -Dvalkey.host=valkey --info
 
       - name: Login to Docker Hub
