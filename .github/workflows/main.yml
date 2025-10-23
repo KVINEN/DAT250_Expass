@@ -9,8 +9,13 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    steps:
+    services:
+      valkey:
+        image: valkey/valkey:7.2-alpine
+        ports:
+          - 6379:6379
 
+    steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
@@ -23,11 +28,10 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build and Analyze
+      - name: Build, Analyze, and Test
         env:
-
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GHUB_TOKEN }} 
+          GITHUB_TOKEN: ${{ secrets.GHUB_TOKEN }}
         run: ./gradlew build sonarqube --info
 
       - name: Login to Docker Hub
