@@ -12,6 +12,8 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -42,6 +44,22 @@ public class PollControllerTests {
         pollCreator.setPassword("pass123");
 
         restTemplate.postForEntity(url, pollCreator, User.class);
+    }
+
+    @DynamicPropertySource
+    static void valkeyProperties(DynamicPropertyRegistry registry) {
+        String valkeyHost = System.getenv("VALKEY_HOST_TEST"); // Use a specific env var if needed later
+        if (valkeyHost == null || valkeyHost.isEmpty()) {
+            valkeyHost = System.getProperty("valkey.host"); // Check system property from Gradle
+        }
+        if (valkeyHost == null || valkeyHost.isEmpty()) {
+            valkeyHost = "localhost"; // Default for local runs if nothing else is set
+        }
+        System.out.println("Setting valkey.host for test context: " + valkeyHost);
+        // Set the system property that PollManager reads
+        System.setProperty("valkey.host", valkeyHost);
+        // If you were using Spring properties (e.g., spring.data.valkey.host), you'd set them like this:
+        // registry.add("spring.data.valkey.host", () -> valkeyHost);
     }
 
     @Test
