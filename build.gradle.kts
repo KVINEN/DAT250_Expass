@@ -55,6 +55,8 @@ jacoco {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+    val valkeyHost = System.getProperty("valkey.host") ?: System.getenv("VALKEY_HOST") ?: "localhost"
+    systemProperty("valkey.host", valkeyHost)
 }
 
 tasks.jacocoTestReport {
