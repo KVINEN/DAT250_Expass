@@ -1,11 +1,13 @@
 package com.example.DAT250_Expass.Models;
 
+import io.valkey.JedisPooled;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -19,6 +21,60 @@ public class PollManager {
     private final HashMap<Integer, User> users = new HashMap<>();
     private final HashMap<Integer, Poll> polls = new HashMap<>();
     private final HashMap<Integer, Vote> votes = new HashMap<>();
+
+    private final JedisPooled jedis;
+    private final int CASH_TTL_SECONDS = 300;
+
+    public PollManager() {
+        this.jedis = new JedisPooled("localhost", 6379);
+        System.out.println("Valkey connection established " + this.jedis.ping());
+    }
+
+    public Map<Integer, Long> getPollVoteCounters(Integer pollId) {
+        String cacheKey = "poll:cache:" + pollId;
+
+        Map<String, String> cacheCounterStr = jedis.hgetAll(cacheKey);
+
+        if (cacheCounterStr != null && !cacheCounterStr.isEmpty()) {
+            System.out.println("Cache HIT for poll: " + pollId);
+            jedis.expire(cacheKey, CASH_TTL_SECONDS);
+            return cacheCounterStr.entrySet().stream()
+                    .collect(Collectors.toMap(
+                            entry ->  Integer.parseInt(entry.getKey()),
+                            entry -> Long.parseLong(entry.getValue())
+                    ));
+        } else {
+            System.out.println("Cache MISS for poll: " + pollId);
+            Poll poll = getPollById(pollId);
+            if (poll == null) {
+                return new HashMap<>();
+            }
+            Map<Integer, Long> actualCounts = getVotesForPoll(pollId).stream()
+                    .collect(Collectors.groupingBy(vote -> vote.getVotesOn().getId(), Collectors.counting()));
+
+            for (VoteOption option : poll.getOptions()) {
+                actualCounts.putIfAbsent(option.getId(), 0L);
+            }
+
+            if (!actualCounts.isEmpty()) {
+                Map<String, String> countsToCache = actualCounts.entrySet().stream()
+                        .collect(Collectors.toMap(
+                                entry -> String.valueOf(entry.getKey()),
+                                entry -> String.valueOf(entry.getValue())
+                        ));
+                jedis.hset(cacheKey, countsToCache);
+                jedis.expire(cacheKey, CASH_TTL_SECONDS);
+                System.out.println("Stored in cache for poll: " +  pollId);
+            }
+            return actualCounts;
+        }
+    }
+
+    private void invalidatePollCache(Integer pollId) {
+        String cacheKey = "poll:cache:" + pollId;
+        jedis.del(cacheKey);
+        System.out.println("Invalidated cache for poll: " + pollId);
+    }
 
     public User addUser(User user) {
         user.setId(userIdCounter.incrementAndGet());
@@ -80,6 +136,9 @@ public class PollManager {
 
         vote.setVoteId(voteIdCounter.incrementAndGet());
         votes.put(vote.getVoteId(), vote);
+
+        invalidatePollCache(poll.getId());
+
         return vote;
     }
 
@@ -108,5 +167,7 @@ public class PollManager {
         }
 
         polls.remove(pollId);
+
+        invalidatePollCache(pollId);
     }
 }

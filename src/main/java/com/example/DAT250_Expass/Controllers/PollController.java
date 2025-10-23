@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class PollController {
@@ -31,5 +32,14 @@ public class PollController {
     public ResponseEntity<Void> deletePoll(@PathVariable Integer pollId) {
         pollManager.deletePoll(pollId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/api/polls/{pollId}/votecounts")
+    public ResponseEntity<Map<Integer, Long>> getPollVoteCounts(@PathVariable Integer pollId) {
+        Map<Integer, Long> voteCounts = pollManager.getPollVoteCounters(pollId);
+        if (voteCounts.isEmpty() && pollManager.getPollById(pollId) == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(voteCounts);
     }
 }

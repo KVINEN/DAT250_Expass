@@ -44,11 +44,7 @@ public class Poll {
         this.isPrivate = isPrivate;
         this.limitToOneVote = limitToOneVote;
         this.createdBy = user;
-        if (voteOptions != null) {
-            for (VoteOption option : voteOptions) {
-                this.addVoteOption(option.getCaption());
-            }
-        }
+        this.options = voteOptions;
     }
 
     public VoteOption addVoteOption(String caption) {

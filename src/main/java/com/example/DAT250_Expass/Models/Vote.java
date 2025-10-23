@@ -1,5 +1,6 @@
 package com.example.DAT250_Expass.Models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.Instant;
@@ -66,12 +67,14 @@ public class Vote {
 
     @Transient
     @Deprecated
+    @JsonIgnore
     public VoteOption getVotingOption() {
         return votesOn;
     }
 
     @Transient
     @Deprecated
+    @JsonIgnore
     public void setVotingOption(VoteOption votingOption) {
         this.votesOn = votingOption;
     }
