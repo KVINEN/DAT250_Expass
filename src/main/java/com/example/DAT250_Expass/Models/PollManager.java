@@ -26,8 +26,12 @@ public class PollManager {
     private final int CASH_TTL_SECONDS = 300;
 
     public PollManager() {
-        this.jedis = new JedisPooled("localhost", 6379);
-        System.out.println("Valkey connection established " + this.jedis.ping());
+        String valkeyHost = System.getenv("VALKEY_HOST");
+        if (valkeyHost == null) {
+            valkeyHost = "localhost";
+        }
+        this.jedis = new JedisPooled(valkeyHost, 6379);
+        System.out.println("Valkey connection established " + valkeyHost + ":6379" + this.jedis.ping());
     }
 
     public Map<Integer, Long> getPollVoteCounters(Integer pollId) {

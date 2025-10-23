@@ -1,3 +1,6 @@
+import io.valkey.JedisPool;
+import io.valkey.JedisPooled;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,7 +14,14 @@ public class ValkeyTest {
         config.setMaxTotal(32);
         config.setMaxIdle(32);
         config.setMinIdle(16);
-        jedisPool = new io.valkey.JedisPool(config);
+
+        String valkeyHost = System.getenv("VALKEY_HOST");
+        if(valkeyHost == null) {
+            valkeyHost = "localhost";
+        }
+
+        jedisPool = new JedisPool(config, valkeyHost, 6379);
+
         try (io.valkey.Jedis jedis = jedisPool.getResource()) {
             System.out.println("Connection Successful: " + jedis.ping());
 
