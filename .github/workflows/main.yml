@@ -62,18 +62,21 @@ jobs:
             exit 1
           fi
           echo "Valkey service is ready on localhost."
-          echo "Waiting for RabbitMQ service on rabbitmq..."
+          
+          echo "Waiting for RabbitMQ service on localhost..."
           count=0
-          until nc -z rabbitmq 5672 || [ $count -eq 30 ]; do
-            echo "RabbitMQ not ready yet on rabbitmq:5672, waiting... ($count/30)"
+          until nc -z localhost 5672 || [ $count -eq 30 ]; do
+            echo "RabbitMQ not ready yet on localhost:5672, waiting... ($count/30)"
             sleep 2
             count=$((count+1))
           done
-          if ! nc -z rabbitmq 5672; then
-            echo "::error::RabbitMQ service failed to become available on rabbitmq:5672 after 60 seconds."
+
+          if ! nc -z localhost 5672; then
+            echo "::error::RabbitMQ service failed to become available on localhost:5672 after 60 seconds."
             exit 1
           fi
-          echo "RabbitMQ service is ready on rabbitmq."
+          echo "RabbitMQ service is ready on localhost."
+          
           echo "Starting build, analysis, and tests..."
           ./gradlew build sonarqube -Dvalkey.host=localhost -Dspring.rabbitmq.host=rabbitmq --info
 
