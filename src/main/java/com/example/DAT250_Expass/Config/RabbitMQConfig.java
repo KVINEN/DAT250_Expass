@@ -15,7 +15,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 public class RabbitMQConfig {
 
     public static final String VOTE_QUEUE_NAME = "poll.votes.queue";
-    public static final String POLL_EXCHANGE_NAME = "poll.*";
+    public static final String POLL_EXCHANGE_NAME_PATTERN = "poll.*";
     public static final String VOTE_ROUTING_KEY = "vote.#";
 
     @Bean
@@ -29,9 +29,14 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public Declarables topicBinding(RabbitAdmin rabbitAdmin, Queue voteQueue) {
+    public TopicExchange pollWildcardExchange() {
+        return new TopicExchange(POLL_EXCHANGE_NAME_PATTERN, true, false);
+    }
+
+    @Bean
+    public Declarables voteQueueBinding(RabbitAdmin rabbitAdmin, Queue voteQueue, TopicExchange pollWildcardExchange) {
         Binding binding = BindingBuilder.bind(voteQueue)
-                .to(new TopicExchange(POLL_EXCHANGE_NAME, true,false))
+                .to(pollWildcardExchange)
                 .with(VOTE_ROUTING_KEY);
         return new Declarables(voteQueue, binding);
     }
