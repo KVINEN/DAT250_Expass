@@ -37,7 +37,6 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GHUB_TOKEN }}
-          #VALKEY_HOST: valkey
         run: |
           echo "Waiting for Valkey service on localhost..."
           count=0
@@ -54,7 +53,6 @@ jobs:
           echo "Valkey service is ready on localhost."
           
           echo "Starting build, analysis, and tests..."
-          # Run build, tests, and sonarqube here. Connect using localhost.
           ./gradlew build sonarqube -Dvalkey.host=localhost --info
 
       - name: Login to Docker Hub
