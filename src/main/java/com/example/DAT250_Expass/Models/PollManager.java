@@ -177,4 +177,43 @@ public class PollManager {
 
         invalidatePollCache(pollId);
     }
+
+    public void recordVoteFromQueue(Vote voteFromQueue) {
+        Poll poll = getPollById(voteFromQueue.getVotesOn().getPoll().getId());
+        User user = users.get(voteFromQueue.getUser().getId());
+        VoteOption option = poll != null ? poll.getOptions().stream()
+                .filter(opt -> opt.getId().equals(voteFromQueue.getVotesOn().getId()))
+                .findFirst().orElse(null) : null;
+
+        if (poll == null || user == null || option == null) {
+            System.err.println("Cannot record vote from queue: Invalid poll, user, or option ID.");
+            return;
+        }
+
+        Instant now = Instant.now();
+        if(!(now.isAfter(poll.getPublishedAt()) && now.isBefore(poll.getValidUntil()))) {
+            System.err.println("Vote from queue is outside the valid time window.");
+            return;
+        }
+
+        if (poll.getIsPrivate() && poll.getLimitToOneVote()) {
+            for (Vote existingVote : votes.values()) {
+                if (existingVote.getUser().getId().equals(user.getId()) && existingVote.getVotesOn().getPoll().getId().equals(poll.getId())) {
+                    System.err.println("User " + user.getId() + " has already voted on this private poll (from queue).");
+                    return;
+                }
+            }
+        }
+
+        Vote internalVote = new Vote(
+                voteIdCounter.incrementAndGet(),
+                user,
+                voteFromQueue.getPublishedAt(),
+                option
+        );
+        votes.put(internalVote.getVoteId(), internalVote);
+        System.out.println("Recorded vote from queue for poll " + poll.getId());
+
+        invalidatePollCache(poll.getId());
+    }
 }
