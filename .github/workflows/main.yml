@@ -29,7 +29,7 @@ jobs:
           --health-cmd "rabbitmq-diagnostics check_port_connectivity"
           --health-interval 10s
           --health-timeout 5s
-          --health-retries 10 # Increase retries, RabbitMQ can take longer
+          --health-retries 10
 
     steps:
       - name: Checkout Code
